@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import cors from "cors";
 
+// Import Database
+import database from "./database/db.js";
+
 // Load .env file
 dotenv.config();
 
@@ -42,8 +45,9 @@ server.get("/health", (req, res) => {
 });
 
 // Start server
-function startServer() {
+async function startServer() {
     try {
+        await database.sync({ force: true });
         server.listen(backend_port, () => {
             console.log(
                 `🚀 Server running at ${backend_addr}:${backend_port} ...`,

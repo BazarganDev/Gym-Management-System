@@ -7,6 +7,11 @@ import cors from "cors";
 // Import Database
 import database from "./database/db.js";
 
+// Import Models
+import Member from "./models/membersModel.js";
+import Locker from "./models/lockersModel.js";
+import Membership from "./models/membershipsModel.js";
+
 // Load .env file
 dotenv.config();
 

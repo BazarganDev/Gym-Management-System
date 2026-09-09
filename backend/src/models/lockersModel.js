@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../database/db.js";
+import Member from "./membersModel.js";
 
 const Locker = database.define("Locker", {
     locker_id: {
@@ -9,6 +10,13 @@ const Locker = database.define("Locker", {
         unique: true,
         allowNull: false,
     },
+    member_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Member,
+            key: "member_id",
+        },
+    },
     locker_number: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -16,9 +24,8 @@ const Locker = database.define("Locker", {
     },
     status: {
         type: DataTypes.ENUM("available", "occupied", "maintenance"),
-        allowNull: false
+        allowNull: false,
     },
-
 });
 
 export default Locker;

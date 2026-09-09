@@ -11,6 +11,8 @@ import database from "./database/db.js";
 import Member from "./models/membersModel.js";
 import Locker from "./models/lockersModel.js";
 import Membership from "./models/membershipsModel.js";
+import Payment from "./models/paymentsModel.js";
+import Attendance from "./models/attendancesModel.js";
 
 // Load .env file
 dotenv.config();

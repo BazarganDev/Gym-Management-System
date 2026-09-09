@@ -26,8 +26,9 @@ const Member = database.define("Member", {
         allowNull: false,
     },
     birth_date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
     },
     gender: {
         type: DataTypes.ENUM("male", "female"),
@@ -36,6 +37,7 @@ const Member = database.define("Member", {
     join_date: {
         type: DataTypes.DATE,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
     },
     status: {
         type: DataTypes.ENUM("active", "inactive", "suspended"),

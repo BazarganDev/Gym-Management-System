@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../database/db.js";
+import Member from "./membersModel.js";
 
 const Membership = database.define("Membership", {
     membership_id: {
@@ -8,6 +9,13 @@ const Membership = database.define("Membership", {
         autoIncrement: true,
         unique: true,
         allowNull: false,
+    },
+    member_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Member,
+            key: "member_id",
+        },
     },
     type: {
         type: DataTypes.ENUM(

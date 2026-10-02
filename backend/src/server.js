@@ -7,13 +7,14 @@ import cors from "cors";
 // Import Database
 import database from "./database/db.js";
 
-// Import Models
+// Import Models and Associations
 import Member from "./models/membersModel.js";
 import Locker from "./models/lockersModel.js";
 import Membership from "./models/membershipsModel.js";
 import Payment from "./models/paymentsModel.js";
 import Attendance from "./models/attendancesModel.js";
 import lockerAssignment from "./models/lockerAssignmentsModel.js";
+import setupAssociations from "./database/associations.js";
 
 // Load .env file
 dotenv.config();
@@ -25,6 +26,8 @@ const frontend_addr_1 = process.env.FRONTEND_ADDR_1;
 const frontend_addr_2 = process.env.FRONTEND_ADDR_2;
 
 const server = express();
+
+setupAssociations();
 
 // Middlewares
 server.use(express.json());

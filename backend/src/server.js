@@ -13,6 +13,7 @@ import Locker from "./models/lockersModel.js";
 import Membership from "./models/membershipsModel.js";
 import Payment from "./models/paymentsModel.js";
 import Attendance from "./models/attendancesModel.js";
+import lockerAssignment from "./models/lockerAssignmentsModel.js";
 
 // Load .env file
 dotenv.config();

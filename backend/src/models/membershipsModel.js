@@ -12,6 +12,7 @@ const Membership = database.define("Membership", {
     },
     member_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
             model: Member,
             key: "member_id",

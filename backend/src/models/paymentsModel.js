@@ -15,6 +15,7 @@ const Payment = database.define(
         },
         member_id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             references: {
                 model: Member,
                 key: "member_id",
@@ -22,6 +23,7 @@ const Payment = database.define(
         },
         membership_id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             references: {
                 model: Membership,
                 key: "membership_id",

@@ -5,7 +5,15 @@ async function getAllMembers() {
     return members;
 }
 
-async function getMember(phone) {
+async function getMember(id) {
+    const member = Member.findByPk(id);
+    return member;
+}
+
+async function checkMemberExists(phone) {
+    // Check if the member with the given phone number exists on the DB
+    // If yes, return the member
+    // If no, return null
     const member = Member.findOne({
         where: { phone: phone },
     });
@@ -17,4 +25,15 @@ async function createMember(data) {
     return newMember;
 }
 
-export default { getAllMembers, getMember, createMember };
+async function editMember(data) {
+    const member = Member.update(data);
+    return member;
+}
+
+export default {
+    getAllMembers,
+    getMember,
+    checkMemberExists,
+    createMember,
+    editMember,
+};

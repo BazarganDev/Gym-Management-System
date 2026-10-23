@@ -16,6 +16,9 @@ import Attendance from "./models/attendancesModel.js";
 import lockerAssignment from "./models/lockerAssignmentsModel.js";
 import setupAssociations from "./database/associations.js";
 
+// Import Routes
+import membersRoute from "./routes/membersRoute.js";
+
 // Load .env file
 dotenv.config();
 
@@ -55,10 +58,13 @@ server.get("/health", (req, res) => {
     }
 });
 
+// Routes
+server.use("/api/members", membersRoute);
+
 // Start server
 async function startServer() {
     try {
-        await database.sync({ force: true });
+        await database.sync();
         server.listen(backend_port, () => {
             console.log(
                 `🚀 Server running at ${backend_addr}:${backend_port} ...`,

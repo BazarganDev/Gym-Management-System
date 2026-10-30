@@ -20,10 +20,12 @@ const Member = database.define("Member", {
     phone: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     birth_date: {
         type: DataTypes.DATEONLY,

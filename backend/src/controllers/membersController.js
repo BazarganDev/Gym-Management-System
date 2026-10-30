@@ -29,19 +29,28 @@ async function createMemberController(req, res) {
         status: vine.enum(["active", "inactive", "suspended"]),
     });
     // Validate
+    let validatedData = {};
     try {
-        const output = await vine.validate({ schema, data });
+        const output = await vine.validate({ schema: schema, data: data });
+        validatedData = output;
     } catch (error) {
         res.status(400).json({ message: error.messages[0].message });
         return;
     }
-    // Check if member with the given phone number already exists on the database
-    const member = await membersService.checkMemberExists(req.body.phone);
-    if (member !== null) {
-        res.status(409).json({ message: "Member already exists." });
+    // Check if member with the given phone number and/or email already exists on the database
+    const checkMember = await membersService.checkMemberExists(
+        validatedData.phone,
+        validatedData.email,
+        req.params.id,
+    );
+    if (checkMember !== null) {
+        res.status(409).json({
+            message: "Member already exists.",
+            cause: "Phone or email already been used.",
+        });
         return;
     }
-    const newMember = await membersService.createMember(data);
+    const newMember = await membersService.createMember(validatedData);
     res.status(201).json(newMember);
 }
 
@@ -58,23 +67,48 @@ async function editMemberController(req, res) {
         email: vine.string().email().optional(),
         birth_date: vine.date().optional(),
         gender: vine.enum(["male", "female"]).optional(),
-        join_date: vine.date(),
+        join_date: vine.date().optional(),
         status: vine.enum(["active", "inactive", "suspended"]).optional(),
     });
     // Validate
+    let validatedData = {};
     try {
-        const output = await vine.validate({ schema, data });
+        const output = await vine.validate({ schema: schema, data: data });
+        validatedData = output;
     } catch (error) {
         res.status(400).json({ message: error.messages[0].message });
         return;
     }
-    // Check if member with the given phone number already exists on the database
+    // Find member
     const member = await membersService.getMember(req.params.id);
     if (member === null) {
         res.status(404).json({ message: "No member with the given ID." });
         return;
     }
-    const editedMember = await membersService.editMember(data);
+    // At least one field is required
+    if (Object.keys(validatedData).length === 0) {
+        res.status(400).json({
+            message: "At least one field must be provided.",
+        });
+        return;
+    }
+    // Check if member with the given phone number and/or email already exists on the database
+    const checkMember = await membersService.checkMemberExists(
+        validatedData.phone,
+        validatedData.email,
+        req.params.id,
+    );
+    if (checkMember !== null) {
+        res.status(409).json({
+            message: "Member already exists.",
+            cause: "Phone or email already been used.",
+        });
+        return;
+    }
+    const editedMember = await membersService.editMember(
+        req.params.id,
+        validatedData,
+    );
     res.status(200).json(editedMember);
 }
 

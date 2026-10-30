@@ -1,4 +1,5 @@
 import Member from "../models/membersModel.js";
+import { Op } from "sequelize";
 
 async function getAllMembers() {
     const members = Member.findAll();
@@ -10,12 +11,17 @@ async function getMember(id) {
     return member;
 }
 
-async function checkMemberExists(phone) {
-    // Check if the member with the given phone number exists on the DB
-    // If yes, return the member
-    // If no, return null
+async function checkMemberExists(phone, email, memberId) {
+    const conditions = [];
+    if (phone) conditions.push({ phone });
+    if (email) conditions.push({ email });
     const member = Member.findOne({
-        where: { phone: phone },
+        where: {
+            [Op.and]: [
+                { member_id: { [Op.ne]: memberId } },
+                { [Op.or]: conditions },
+            ],
+        },
     });
     return member;
 }
@@ -25,8 +31,9 @@ async function createMember(data) {
     return newMember;
 }
 
-async function editMember(data) {
-    const member = Member.update(data);
+async function editMember(id, data) {
+    const member = await Member.findByPk(id);
+    await member.update(data);
     return member;
 }
 

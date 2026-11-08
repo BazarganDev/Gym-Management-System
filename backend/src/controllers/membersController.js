@@ -43,7 +43,7 @@ async function createMemberController(req, res) {
         validatedData.email,
         req.params.id,
     );
-    if (checkMember !== null) {
+    if (checkMember) {
         res.status(409).json({
             message: "Member already exists.",
             cause: "Phone or email already been used.",
@@ -98,10 +98,9 @@ async function editMemberController(req, res) {
         validatedData.email,
         req.params.id,
     );
-    if (checkMember !== null) {
+    if (checkMember) {
         res.status(409).json({
-            message: "Member already exists.",
-            cause: "Phone or email already been used.",
+            message: "Phone or email already been used.",
         });
         return;
     }

@@ -111,9 +111,25 @@ async function editMemberController(req, res) {
     res.status(200).json(editedMember);
 }
 
+async function softDeleteMemberController(req, res) {
+    // Find member
+    const member = await membersService.getMember(req.params.id);
+    if (member === null) {
+        res.status(404).json({ message: "No member with the given ID." });
+        return;
+    }
+    const deleted = await membersService.softDeleteMember(req.params.id);
+    if (deleted === true) {
+        res.status(204).json({ message: "Member deleted." });
+    } else {
+        res.status(500).json(deleted);
+    }
+}
+
 export default {
     getAllMembersController,
     getMemberController,
     createMemberController,
     editMemberController,
+    softDeleteMemberController,
 };

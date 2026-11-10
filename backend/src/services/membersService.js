@@ -48,10 +48,24 @@ async function editMember(id, data) {
     return member;
 }
 
+async function softDeleteMember(id) {
+    const member = await Member.findByPk(id);
+    try {
+        if (member.status === "active") {
+            await member.update({ status: "inactive" });
+        }
+        await member.destroy();
+        return true;
+    } catch {
+        return { message: "Internal Server Error!" };
+    }
+}
+
 export default {
     getAllMembers,
     getMember,
     checkMemberExists,
     createMember,
     editMember,
+    softDeleteMember,
 };

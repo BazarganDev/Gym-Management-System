@@ -114,10 +114,22 @@ async function editMemberController(req, res) {
 async function softDeleteMemberController(req, res) {
     const deletedMember = await membersService.softDeleteMember(req.params.id);
     if (!deletedMember) {
-        res.status(400).json({ message: "No member with the given ID." });
+        res.status(404).json({ message: "No member with the given ID." });
         return;
     }
     res.status(204).end();
+}
+
+async function restoreMemberController(req, res) {
+    const restoredMember = await membersService.restoreMember(req.params.id);
+    if (!restoredMember) {
+        res.status(404).json({ message: "No member with the given ID." });
+        return;
+    }
+    res.status(restoredMember.code).json({
+        message: restoredMember.message,
+        data: restoredMember.data,
+    });
 }
 
 export default {
@@ -126,4 +138,5 @@ export default {
     createMemberController,
     editMemberController,
     softDeleteMemberController,
+    restoreMemberController,
 };

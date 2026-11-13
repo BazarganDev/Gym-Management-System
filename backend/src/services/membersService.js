@@ -91,6 +91,29 @@ async function softDeleteMember(id) {
     }
 }
 
+async function restoreMember(id) {
+    const member = await Member.findOne({
+        where: { member_id: id },
+        paranoid: false,
+    });
+    if (!member) {
+        return null;
+    }
+    if (!member.deletedAt) {
+        return {
+            code: 409,
+            message: "Cannot restore a member that already exists.",
+            data: [],
+        };
+    }
+    await member.restore();
+    return {
+        code: 200,
+        message: "Member successfully restored.",
+        data: [member],
+    };
+}
+
 export default {
     getAllMembers,
     getMember,
@@ -98,4 +121,5 @@ export default {
     createMember,
     editMember,
     softDeleteMember,
+    restoreMember,
 };

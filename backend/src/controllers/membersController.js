@@ -2,7 +2,7 @@ import membersService from "../services/membersService.js";
 import vine from "@vinejs/vine";
 
 async function getAllMembersController(req, res) {
-    const members = await membersService.getAllMembers();
+    const members = await membersService.getAllMembers(req);
     res.status(200).json(members);
 }
 
@@ -112,18 +112,12 @@ async function editMemberController(req, res) {
 }
 
 async function softDeleteMemberController(req, res) {
-    // Find member
-    const member = await membersService.getMember(req.params.id);
-    if (member === null) {
-        res.status(404).json({ message: "No member with the given ID." });
+    const deletedMember = await membersService.softDeleteMember(req.params.id);
+    if (!deletedMember) {
+        res.status(400).json({ message: "No member with the given ID." });
         return;
     }
-    const deleted = await membersService.softDeleteMember(req.params.id);
-    if (deleted === true) {
-        res.status(204).json({ message: "Member deleted." });
-    } else {
-        res.status(500).json(deleted);
-    }
+    res.status(204).end();
 }
 
 export default {

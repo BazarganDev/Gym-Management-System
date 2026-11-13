@@ -1,7 +1,34 @@
 import Member from "../models/membersModel.js";
 import { Op } from "sequelize";
 
-async function getAllMembers() {
+async function getAllMembers(request) {
+    const { phone } = request.query;
+    if (phone !== undefined) {
+        const results = await Member.findOne({
+            where: { phone: phone },
+            paranoid: false,
+        });
+        if (!results) {
+            return {
+                search_parameter: phone,
+                matches: 0,
+                data: [],
+            };
+        }
+        if (results.deletedAt !== null) {
+            return {
+                search_parameter: phone,
+                matches: 1,
+                message: "This record has been marked as deleted record.",
+                data: [results],
+            };
+        }
+        return {
+            search_parameter: phone,
+            matches: 1,
+            data: [results],
+        };
+    }
     const members = await Member.findAll();
     return members;
 }
@@ -50,14 +77,17 @@ async function editMember(id, data) {
 
 async function softDeleteMember(id) {
     const member = await Member.findByPk(id);
+    if (!member) {
+        return null;
+    }
     try {
         if (member.status === "active") {
             await member.update({ status: "inactive" });
         }
         await member.destroy();
-        return true;
-    } catch {
-        return { message: "Internal Server Error!" };
+        return member;
+    } catch (error) {
+        throw error;
     }
 }
 

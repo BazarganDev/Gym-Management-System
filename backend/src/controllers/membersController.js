@@ -2,8 +2,8 @@ import membersService from "../services/membersService.js";
 import vine from "@vinejs/vine";
 
 async function getAllMembersController(req, res) {
-    const members = await membersService.getAllMembers(req);
-    res.status(200).json(members);
+    const result = await membersService.getAllMembers(req);
+    res.status(result.code).json(result);
 }
 
 async function getMemberController(req, res) {

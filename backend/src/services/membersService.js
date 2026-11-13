@@ -2,7 +2,10 @@ import Member from "../models/membersModel.js";
 import { Op } from "sequelize";
 
 async function getAllMembers(request) {
-    const { phone } = request.query;
+    const { phone, page, limit, status } = request.query;
+    const _page = Math.max(1, parseInt(page) || 1);
+    const _limit = Math.min(100, Math.max(1, parseInt(limit) || 10));
+    const offset = _limit * (_page - 1);
     if (phone !== undefined) {
         const results = await Member.findOne({
             where: { phone: phone },
@@ -10,6 +13,7 @@ async function getAllMembers(request) {
         });
         if (!results) {
             return {
+                code: 404,
                 search_parameter: phone,
                 matches: 0,
                 data: [],
@@ -17,6 +21,7 @@ async function getAllMembers(request) {
         }
         if (results.deletedAt !== null) {
             return {
+                code: 200,
                 search_parameter: phone,
                 matches: 1,
                 message: "This record has been marked as deleted record.",
@@ -24,13 +29,58 @@ async function getAllMembers(request) {
             };
         }
         return {
+            code: 200,
             search_parameter: phone,
             matches: 1,
             data: [results],
         };
     }
-    const members = await Member.findAll();
-    return members;
+    if (status) {
+        const allowedFieldValues = ["active", "inactive", "suspended"];
+        if (!allowedFieldValues.includes(status)) {
+            return {
+                code: 400,
+                error: "Invalid filter",
+                message: "Field 'status' is not filterable.",
+                allowedFieldValues: allowedFieldValues,
+            };
+        }
+        const members = await Member.findAndCountAll({
+            where: { status: status },
+            limit: _limit,
+            offset: offset,
+        });
+        const total = members.count;
+        return {
+            code: 200,
+            pagination: {
+                currentPage: _page,
+                limit: _limit,
+                totalMembers: total,
+                totalPages: Math.ceil(total / _limit),
+                hasNext: _page * _limit < total,
+                hasPrev: _page > 1,
+            },
+            data: members.rows,
+        };
+    }
+    const members = await Member.findAndCountAll({
+        limit: _limit,
+        offset: offset,
+    });
+    const total = members.count;
+    return {
+        code: 200,
+        pagination: {
+            currentPage: _page,
+            limit: _limit,
+            totalMembers: total,
+            totalPages: Math.ceil(total / _limit),
+            hasNext: _page * _limit < total,
+            hasPrev: _page > 1,
+        },
+        data: members.rows,
+    };
 }
 
 async function getMember(id) {
